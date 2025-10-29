@@ -1,0 +1,60 @@
+This scenario outlines a construction mission variant involving 3 task type(s), 1 robot(s), and 1 human worker(s), operating across 7 location(s). The plan is designed to coordinate human workers and autonomous robots to complete all task instances while meeting probability-of-success and resource constraints.
+
+## Locations
+
+- l2: "Room B" at coordinates (1, 5).
+- l3: "Room C" at coordinates (9, 5).
+- l4: "Room D" at coordinates (3, 1).
+- l6: "Room F" at coordinates (1, 9).
+- l7: "Room G" at coordinates (9, 9).
+- l8: "Room H" at coordinates (5, 1).
+- l9: "Room I" at coordinates (5, 9).
+
+---
+
+## Paths
+
+For simplicity, all direct paths between connected locations have a uniform distance of 10. The site is connected via the following bidirectional paths:
+
+- A path connects l4 to l8.
+- A path connects l6 to l9.
+- A path connects l9 to l7.
+- A path connects l2 to l6.
+- A path connects l8 to l9.
+- A path connects l3 to l7.
+
+---
+
+## Tasks
+
+There are 3 type(s) of construction tasks required for this variant:
+
+- t1: "Foundation preparation", with a base duration of 15.
+    - t1_msa at l6.
+    - t1_msb at l7.
+- t2: "Electrical installation", with a base duration of 30.
+    - t2_ip1 at l8.
+    - t2_ip2 at l8.
+- t3: "Plumbing installation", with a base duration of 45.
+    - t3_bza at l4.
+    - t3_bzb at l7.
+
+---
+
+## Agents
+
+The workforce in this variant consists of 1 autonomous robot(s) and 1 human worker(s).
+
+- Robot r3: Starts at l4.
+    - Capabilities:
+        - t2: probability 0.944, cost 3, duration 28, retries 1.
+- Human h1: Starts at l8.
+    - Capabilities:
+        - t2: probability 0.97, cost 8, duration 25, retries 2.
+        - t3: probability 0.98, cost 10, duration 35, retries 1.
+
+---
+
+## Constraints
+
+The project plan requires a minimum overall probability of success of 0.95. Any individual task assignment within the plan must have a success probability of no less than 0.9.

@@ -1,0 +1,45 @@
+This is an Agricultural Robotics case study describing a planning problem within a grid-based environment involving multiple agents and tasks.
+
+## **Locations**
+
+The environment uses 8 location(s) from a 3x3 grid:
+
+* **l1**: The 'Initial location' at coordinates (1, 1).
+* **l2**: The 'Location to the right of location' at coordinates (1, 2).
+* **l3**: A location at coordinates (1, 3).
+* **l4**: A location at coordinates (2, 1).
+* **l5**: A location at coordinates (2, 2).
+* **l6**: A location at coordinates (2, 3).
+* **l7**: A location at coordinates (3, 1).
+* **l8**: A location at coordinates (3, 2).
+
+## **Paths**
+
+The following bidirectional paths exist (distance = 1):
+* A path of distance 1 connects l1 and l2.
+* A path of distance 1 connects l1 and l4.
+* A path of distance 1 connects l2 and l3.
+* A path of distance 1 connects l2 and l5.
+* A path of distance 1 connects l3 and l6.
+* A path of distance 1 connects l4 and l5.
+* A path of distance 1 connects l4 and l7.
+* A path of distance 1 connects l5 and l6.
+* A path of distance 1 connects l5 and l8.
+* A path of distance 1 connects l7 and l8.
+
+## **Tasks**
+
+* **Harvesting (t1)**: Grape harvesting is an extremely arduous and repetitive activity. This task has a base duration of 1. Instances: t1l4 at l4, t1l5 at l5, t1l6 at l6.
+* **Vineyard monitoring (t2)**: Continuous monitoring of vine health and conditions. This task has a base duration of 1. Instances: t2l4 at l4, t2l5 at l5, t2l6 at l6.
+* **Grapevine identification (t3)**: Taking leaf pictures and sending to a central unit. This task has a base duration of 1. Instances: t3l4 at l4, t3l5 at l5, t3l6 at l6.
+
+## **Agents**
+
+A team of 3 human worker(s) and 1 robot(s) is available. All agents start at l1.
+Workers can perform t1 (prob=1.00, cost=3, duration=5, retries=5) and t3 (prob=0.99, cost=5, duration=3, retries=5).
+Robots can perform t2 (prob=0.99, cost=1, duration=5, retries=10) and t3 (prob=0.97, cost=1, duration=3, retries=10).
+
+## **Constraints**
+
+* The minimum acceptable probability of success for the entire mission is 0.95.
+* Any single task assignment must have a minimum success probability of 0.5 to be considered valid.

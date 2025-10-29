@@ -1,0 +1,61 @@
+This scenario outlines a construction mission variant involving 3 task type(s), 2 robot(s), and 2 human worker(s), operating across 5 location(s). The plan is designed to coordinate human workers and autonomous robots to complete all task instances while meeting probability-of-success and resource constraints.
+
+## Locations
+
+- l3: "Room C" at coordinates (9, 5).
+- l6: "Room F" at coordinates (1, 9).
+- l7: "Room G" at coordinates (9, 9).
+- l8: "Room H" at coordinates (5, 1).
+- l10: "Room J" at coordinates (9, 1).
+
+---
+
+## Paths
+
+For simplicity, all direct paths between connected locations have a uniform distance of 10. The site is connected via the following bidirectional paths:
+
+- A path connects l3 to l7.
+- A path connects l7 to l10.
+
+---
+
+## Tasks
+
+There are 3 type(s) of construction tasks required for this variant:
+
+- t1: "Foundation preparation", with a base duration of 15.
+    - t1_msa at l6.
+    - t1_msb at l7.
+- t3: "Plumbing installation", with a base duration of 45.
+    - t3_bza at l3.
+    - t3_bzb at l3.
+- t4: "Finishing work", with a base duration of 20.
+    - t4_se1 at l10.
+    - t4_wcp1 at l10.
+
+---
+
+## Agents
+
+The workforce in this variant consists of 2 autonomous robot(s) and 2 human worker(s).
+
+- Robot r2: Starts at l7.
+    - Capabilities:
+        - t1: probability 0.98, cost 2, duration 13, retries 4.
+- Robot r3: Starts at l10.
+    - Capabilities:
+        - t4: probability 0.99, cost 1, duration 18, retries 5.
+- Human h1: Starts at l10.
+    - Capabilities:
+        - t3: probability 0.98, cost 10, duration 35, retries 1.
+- Human h2: Starts at l7.
+    - Capabilities:
+        - t4: probability 0.96, cost 8, duration 40, retries 3.
+        - t1: probability 0.984, cost 9, duration 36, retries 1.
+        - t3: probability 0.98, cost 10, duration 35, retries 1.
+
+---
+
+## Constraints
+
+The project plan requires a minimum overall probability of success of 0.95. Any individual task assignment within the plan must have a success probability of no less than 0.9.

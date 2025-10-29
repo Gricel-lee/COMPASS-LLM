@@ -1,0 +1,203 @@
+{
+  "locations": [
+    {"id": "l1", "description": "Room A", "coordinates": {"x": 1, "y": 1}},
+    {"id": "l2", "description": "Room B", "coordinates": {"x": 2, "y": 2}},
+    {"id": "l3", "description": "Room C", "coordinates": {"x": 3, "y": 3}},
+    {"id": "l4", "description": "Room D", "coordinates": {"x": 4, "y": 4}},
+    {"id": "l5", "description": "Room E", "coordinates": {"x": 5, "y": 5}},
+    {"id": "l6", "description": "Room F", "coordinates": {"x": 6, "y": 6}},
+    {"id": "l7", "description": "Room G", "coordinates": {"x": 7, "y": 7}}
+  ],
+  "paths": [
+    {"start_location": "l1", "end_location": "l2", "distance": 1},
+    {"start_location": "l1", "end_location": "l3", "distance": 1},
+    {"start_location": "l1", "end_location": "l4", "distance": 1},
+    {"start_location": "l1", "end_location": "l5", "distance": 1},
+    {"start_location": "l1", "end_location": "l6", "distance": 1},
+    {"start_location": "l1", "end_location": "l7", "distance": 1},
+    {"start_location": "l2", "end_location": "l3", "distance": 1},
+    {"start_location": "l2", "end_location": "l4", "distance": 1},
+    {"start_location": "l2", "end_location": "l5", "distance": 1},
+    {"start_location": "l2", "end_location": "l6", "distance": 1},
+    {"start_location": "l2", "end_location": "l7", "distance": 1},
+    {"start_location": "l3", "end_location": "l4", "distance": 1},
+    {"start_location": "l3", "end_location": "l5", "distance": 1},
+    {"start_location": "l3", "end_location": "l6", "distance": 1},
+    {"start_location": "l3", "end_location": "l7", "distance": 1},
+    {"start_location": "l4", "end_location": "l5", "distance": 1},
+    {"start_location": "l4", "end_location": "l6", "distance": 1},
+    {"start_location": "l4", "end_location": "l7", "distance": 1},
+    {"start_location": "l5", "end_location": "l6", "distance": 1},
+    {"start_location": "l5", "end_location": "l7", "distance": 1},
+    {"start_location": "l6", "end_location": "l7", "distance": 1}
+  ],
+  "tasks": [
+    {
+      "id": "t1",
+      "description": "Foundation preparation",
+      "duration": 15,
+      "instances": [
+        {"id": "t1_1", "location": "l1"}
+      ]
+    },
+    {
+      "id": "t2",
+      "description": "Electrical installation",
+      "duration": 30,
+      "instances": [
+        {"id": "t2_1", "location": "l2"},
+        {"id": "t2_2", "location": "l3"}
+      ]
+    },
+    {
+      "id": "t3",
+      "description": "Plumbing installation",
+      "duration": 45,
+      "instances": [
+        {"id": "t3_1", "location": "l4"}
+      ]
+    },
+    {
+      "id": "t4",
+      "description": "Finishing work",
+      "duration": 20,
+      "instances": [
+        {"id": "t4_1", "location": "l5"}
+      ]
+    },
+    {
+      "id": "t5",
+      "description": "Structural work",
+      "duration": 25,
+      "instances": [
+        {"id": "t5_1", "location": "l6"},
+        {"id": "t5_2", "location": "l7"}
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "id": "r1",
+      "type": "robot",
+      "initial_location": "l1",
+      "tasks": [
+        {
+          "type": "t1",
+          "probability_of_success": 0.99,
+          "cost": 2,
+          "duration": 12,
+          "number_of_retries": 4
+        },
+        {
+          "type": "t3",
+          "probability_of_success": 0.95,
+          "cost": 5,
+          "duration": 40,
+          "number_of_retries": 2
+        }
+      ]
+    },
+    {
+      "id": "r2",
+      "type": "robot",
+      "initial_location": "l2",
+      "tasks": [
+        {
+          "type": "t1",
+          "probability_of_success": 0.98,
+          "cost": 2,
+          "duration": 13,
+          "number_of_retries": 4
+        }
+      ]
+    },
+    {
+      "id": "r3",
+      "type": "robot",
+      "initial_location": "l3",
+      "tasks": [
+        {
+          "type": "t4",
+          "probability_of_success": 0.99,
+          "cost": 1,
+          "duration": 18,
+          "number_of_retries": 5
+        },
+        {
+          "type": "t5",
+          "probability_of_success": 0.96,
+          "cost": 3,
+          "duration": 22,
+          "number_of_retries": 3
+        }
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "worker",
+      "initial_location": "l4",
+      "tasks": [
+        {
+          "type": "t2",
+          "probability_of_success": 0.97,
+          "cost": 8,
+          "duration": 25,
+          "number_of_retries": 2
+        },
+        {
+          "type": "t3",
+          "probability_of_success": 0.98,
+          "cost": 10,
+          "duration": 35,
+          "number_of_retries": 1
+        }
+      ]
+    },
+    {
+      "id": "h2",
+      "type": "worker",
+      "initial_location": "l5",
+      "tasks": [
+        {
+          "type": "t4",
+          "probability_of_success": 0.96,
+          "cost": 6,
+          "duration": 18,
+          "number_of_retries": 3
+        },
+        {
+          "type": "t5",
+          "probability_of_success": 0.95,
+          "cost": 7,
+          "duration": 20,
+          "number_of_retries": 2
+        }
+      ]
+    },
+    {
+      "id": "h3",
+      "type": "worker",
+      "initial_location": "l6",
+      "tasks": [
+        {
+          "type": "t1",
+          "probability_of_success": 0.94,
+          "cost": 4,
+          "duration": 14,
+          "number_of_retries": 3
+        },
+        {
+          "type": "t2",
+          "probability_of_success": 0.97,
+          "cost": 9,
+          "duration": 28,
+          "number_of_retries": 2
+        }
+      ]
+    }
+  ],
+  "constraints": {
+    "mission_probability_of_success": 0.0,
+    "min_assignment_probability": 0.0
+  }
+}

@@ -1,0 +1,78 @@
+This scenario outlines a construction mission variant involving 4 task type(s), 2 robot(s), and 3 human worker(s), operating across 8 location(s). The plan is designed to coordinate human workers and autonomous robots to complete all task instances while meeting probability-of-success and resource constraints.
+
+## Locations
+
+- l1: "Room A" at coordinates (5, 5).
+- l2: "Room B" at coordinates (1, 5).
+- l4: "Room D" at coordinates (3, 1).
+- l5: "Room E" at coordinates (7, 1).
+- l6: "Room F" at coordinates (1, 9).
+- l7: "Room G" at coordinates (9, 9).
+- l9: "Room I" at coordinates (5, 9).
+- l10: "Room J" at coordinates (9, 1).
+
+---
+
+## Paths
+
+For simplicity, all direct paths between connected locations have a uniform distance of 10. The site is connected via the following bidirectional paths:
+
+- A path connects l2 to l1.
+- A path connects l5 to l10.
+- A path connects l6 to l9.
+- A path connects l9 to l7.
+- A path connects l2 to l6.
+- A path connects l1 to l9.
+- A path connects l7 to l10.
+
+---
+
+## Tasks
+
+There are 4 type(s) of construction tasks required for this variant:
+
+- t1: "Foundation preparation", with a base duration of 15.
+    - t1_msa at l6.
+    - t1_msb at l7.
+- t2: "Electrical installation", with a base duration of 30.
+    - t2_ip1 at l2.
+    - t2_ip2 at l5.
+- t3: "Plumbing installation", with a base duration of 45.
+    - t3_bza at l4.
+    - t3_bzb at l5.
+- t4: "Finishing work", with a base duration of 20.
+    - t4_se1 at l10.
+    - t4_wcp1 at l9.
+
+---
+
+## Agents
+
+The workforce in this variant consists of 2 autonomous robot(s) and 3 human worker(s).
+
+- Robot r3: Starts at l5.
+    - Capabilities:
+        - t4: probability 0.99, cost 1, duration 18, retries 5.
+- Robot r1: Starts at l9.
+    - Capabilities:
+        - t1: probability 0.99, cost 2, duration 12, retries 4.
+        - t3: probability 0.95, cost 5, duration 40, retries 2.
+- Human h1: Starts at l5.
+    - Capabilities:
+        - t2: probability 0.97, cost 8, duration 25, retries 2.
+        - t3: probability 0.98, cost 10, duration 35, retries 1.
+- Human h2: Starts at l1.
+    - Capabilities:
+        - t2: probability 0.97, cost 8, duration 25, retries 2.
+        - t4: probability 0.943, cost 8, duration 20, retries 3.
+- Human h3: Starts at l5.
+    - Capabilities:
+        - t1: probability 0.956, cost 10, duration 36, retries 1.
+        - t3: probability 0.98, cost 10, duration 35, retries 1.
+        - t2: probability 0.97, cost 8, duration 25, retries 2.
+
+---
+
+## Constraints
+
+The project plan requires a minimum overall probability of success of 0.95. Any individual task assignment within the plan must have a success probability of no less than 0.9.

@@ -1,0 +1,210 @@
+{
+    "locations": [
+        {
+            "id": "l3",
+            "description": "Room C",
+            "coordinates": {
+                "x": 9,
+                "y": 5
+            }
+        },
+        {
+            "id": "l6",
+            "description": "Room F",
+            "coordinates": {
+                "x": 1,
+                "y": 9
+            }
+        },
+        {
+            "id": "l7",
+            "description": "Room G",
+            "coordinates": {
+                "x": 9,
+                "y": 9
+            }
+        },
+        {
+            "id": "l9",
+            "description": "Room I",
+            "coordinates": {
+                "x": 5,
+                "y": 9
+            }
+        },
+        {
+            "id": "l10",
+            "description": "Room J",
+            "coordinates": {
+                "x": 9,
+                "y": 1
+            }
+        }
+    ],
+    "paths": [
+        {
+            "start_location": "l6",
+            "end_location": "l9",
+            "distance": 10
+        },
+        {
+            "start_location": "l9",
+            "end_location": "l7",
+            "distance": 10
+        },
+        {
+            "start_location": "l3",
+            "end_location": "l7",
+            "distance": 10
+        },
+        {
+            "start_location": "l7",
+            "end_location": "l10",
+            "distance": 10
+        }
+    ],
+    "tasks": [
+        {
+            "id": "t3",
+            "description": "Plumbing installation",
+            "duration": 45,
+            "instances": [
+                {
+                    "id": "t3_bza",
+                    "location": "l10"
+                },
+                {
+                    "id": "t3_bzb",
+                    "location": "l7"
+                }
+            ]
+        },
+        {
+            "id": "t4",
+            "description": "Finishing work",
+            "duration": 20,
+            "instances": [
+                {
+                    "id": "t4_se1",
+                    "location": "l10"
+                },
+                {
+                    "id": "t4_wcp1",
+                    "location": "l9"
+                }
+            ]
+        },
+        {
+            "id": "t1",
+            "description": "Foundation preparation",
+            "duration": 15,
+            "instances": [
+                {
+                    "id": "t1_msa",
+                    "location": "l6"
+                },
+                {
+                    "id": "t1_msb",
+                    "location": "l7"
+                }
+            ]
+        }
+    ],
+    "agents": [
+        {
+            "id": "r3",
+            "type": "robot",
+            "initial_location": "l3",
+            "tasks": [
+                {
+                    "type": "t4",
+                    "probability_of_success": 0.99,
+                    "cost": 1,
+                    "duration": 18,
+                    "number_of_retries": 5
+                }
+            ]
+        },
+        {
+            "id": "r1",
+            "type": "robot",
+            "initial_location": "l10",
+            "tasks": [
+                {
+                    "type": "t1",
+                    "probability_of_success": 0.99,
+                    "cost": 2,
+                    "duration": 12,
+                    "number_of_retries": 4
+                },
+                {
+                    "type": "t3",
+                    "probability_of_success": 0.95,
+                    "cost": 5,
+                    "duration": 40,
+                    "number_of_retries": 2
+                }
+            ]
+        },
+        {
+            "id": "r2",
+            "type": "robot",
+            "initial_location": "l7",
+            "tasks": [
+                {
+                    "type": "t1",
+                    "probability_of_success": 0.98,
+                    "cost": 2,
+                    "duration": 13,
+                    "number_of_retries": 4
+                }
+            ]
+        },
+        {
+            "id": "h1",
+            "type": "worker",
+            "initial_location": "l10",
+            "tasks": [
+                {
+                    "type": "t3",
+                    "probability_of_success": 0.98,
+                    "cost": 10,
+                    "duration": 35,
+                    "number_of_retries": 1
+                }
+            ]
+        },
+        {
+            "id": "h2",
+            "type": "worker",
+            "initial_location": "l10",
+            "tasks": [
+                {
+                    "type": "t1",
+                    "probability_of_success": 0.986,
+                    "cost": 10,
+                    "duration": 20,
+                    "number_of_retries": 1
+                },
+                {
+                    "type": "t3",
+                    "probability_of_success": 0.98,
+                    "cost": 10,
+                    "duration": 35,
+                    "number_of_retries": 1
+                },
+                {
+                    "type": "t4",
+                    "probability_of_success": 0.942,
+                    "cost": 12,
+                    "duration": 40,
+                    "number_of_retries": 3
+                }
+            ]
+        }
+    ],
+    "constraints": {
+        "mission_probability_of_success": 0.95,
+        "min_assignment_probability": 0.9
+    }
+}
