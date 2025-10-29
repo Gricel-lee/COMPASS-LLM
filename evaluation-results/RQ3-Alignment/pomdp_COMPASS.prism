@@ -1,0 +1,295 @@
+pomdp
+
+//------------Set variables--------
+const int selectedprofile;// = non_expert;
+
+//-----------Done Formula----------
+formula done = prompt_input = max_prompt_inputs;
+
+//-----------Observables
+observables a,b,c,profile,prompt_input,step,patiencePred,underPred endobservables
+
+//-----------Variables----------
+//--Patience/Understanding levels
+const int low = 0;
+const int high = 1;
+//--User Profile
+const int non_expert = 1;
+const int planning_expert = 2;
+const int case_study_expert = 3;
+//--Prompt blank spaces
+const int max_prompt_inputs=3;
+
+
+
+//-----------Probability Values----------
+// For "patience" (Low or High) and "predicted patience" (Low or High) combinations. 
+// Similar for "understanding".
+//-------------Non_expert
+//patience
+const double pHH=0.4; //non-expert has about half prob. of been patient (0.4+0.1)
+const double pHL=0.1;
+const double pLH=0.05;
+const double pLL=1-pHH-pHL-pLH;
+//understanding
+const double pHH_u=0.2; //non-expert has lower prob. of initially understanding (0.2+0.05)
+const double pHL_u=0.05;
+const double pLH_u=0.15;
+const double pLL_u=1-pHH_u-pHL_u-pLH_u;
+
+//-------------Planning_expert
+//patience
+const double pHH_pe=0.6;//planning expert has more patience (0.6+0.24)
+const double pHL_pe=0.24;
+const double pLH_pe=0.05;
+const double pLL_pe=1-pHH_pe-pHL_pe-pLH_pe;
+//understanding
+const double pHH_u_pe=0.79;//planning expert has more understanding (0.79+0.023)
+const double pHL_u_pe=0.023;
+const double pLH_u_pe=0.012;
+const double pLL_u_pe=1-pHH_u_pe-pHL_u_pe-pLH_u_pe;
+
+//-------------Case_study_expert
+//patience
+const double pHH_ce=0.16;//case study expert has low patience (0.16+0.03)
+const double pHL_ce=0.03;
+const double pLH_ce=0.29;
+const double pLL_ce=1-pHH_ce-pHL_ce-pLH_ce;
+//understanding
+const double pHH_u_ce=0.56;//case study expert has medium understanding (0.56+0.02)
+const double pHL_u_ce=0.02;
+const double pLH_u_ce=0.2;
+const double pLL_u_ce=1-pHH_u_ce-pHL_u_ce-pLH_u_ce;
+
+// Mechanism in the real world it woul de possible to obtain this as... --describe credibly how to obtain these
+
+
+
+//Predicted: from the time taken to read the instruction
+//Real: Asking patient for patient from high or low
+
+
+// Brainstorming: How to get these?
+// a) the time taken to read the instructions is translated to a probability of the user been patient or not.
+// b) pre-questioneers assessing the patient of profile groups 
+// c) available data (e.g., 20-30 less patience)
+// d) the more interactions with the feedback form (asking the user if they like the explanation) 
+
+
+//-----------Model divided into turns------
+module Turn
+ step:[0..4];
+ //step 0-2: guess human demeanor
+ //step 2: obtain prompt
+ [observeUserPatience]   step=0 -> 1:(step'=1);
+ [observeUserUnderstand] step=1 -> 1:(step'=2);
+ [end] true->1:(step'=3);
+endmodule
+
+
+//-----------Human demeanor model----------
+module HumanBehavioralModel
+ profile:[0..3] init selectedprofile;
+ patience:[0..1] init high; 
+ patiencePred:[0..1] init high;
+ under:[0..1] init high; 
+ underPred:[0..1] init high;
+ //based on historical data, assign value of non-observable 
+ //(e.g., toss in https://github.com/prismmodelchecker/prism/blob/master/prism-examples/pomdps/simple/guess-multi.prism)
+
+
+ //---------------Non_expert----
+ //--patience
+ [observeUserPatience] profile=non_expert & step=0 -> pHH:(patience'=high)&(patiencePred'=high)+
+            pHL:(patience'=high)&(patiencePred'=low)+
+            pLH:(patience'=low)&(patiencePred'=high)+
+            pLL:(patience'=low)&(patiencePred'=low);
+ //--understanding
+ [observeUserUnderstand] profile=non_expert & step=1 -> pHH_u:(under'=high)&(underPred'=high)+
+            pHL_u:(under'=high)&(underPred'=low)+
+            pLH_u:(under'=low)&(underPred'=high)+
+            pLL_u:(under'=low)&(underPred'=low);
+
+
+ //---------------Planning_expert----
+ //--patience
+ [observeUserPatience] profile=planning_expert & step=0 -> pHH_pe:(patience'=high)&(patiencePred'=high)+
+            pHL_pe:(patience'=high)&(patiencePred'=low)+
+            pLH_pe:(patience'=low)&(patiencePred'=high)+
+            pLL_pe:(patience'=low)&(patiencePred'=low);
+ //--understanding
+ [observeUserUnderstand] profile=planning_expert & step=1 -> pHH_u_pe:(under'=high)&(underPred'=high)+
+            pHL_u_pe:(under'=high)&(underPred'=low)+
+            pLH_u_pe:(under'=low)&(underPred'=high)+
+            pLL_u_pe:(under'=low)&(underPred'=low);
+
+
+ //---------------Case_study_expert----
+ //--patience
+ [observeUserPatience] profile=case_study_expert & step=0 -> pHH_ce:(patience'=high)&(patiencePred'=high)+
+            pHL_ce:(patience'=high)&(patiencePred'=low)+
+            pLH_ce:(patience'=low)&(patiencePred'=high)+
+            pLL_ce:(patience'=low)&(patiencePred'=low);
+ //--understanding
+ [observeUserUnderstand] profile=case_study_expert & step=1 -> pHH_u_ce:(under'=high)&(underPred'=high)+
+            pHL_u_ce:(under'=high)&(underPred'=low)+
+            pLH_u_ce:(under'=low)&(underPred'=high)+
+            pLL_u_ce:(under'=low)&(underPred'=low);
+endmodule
+
+
+
+//-----------Prompt selection model----------
+// Take decisions based on the non-observable patience of the user
+
+module PromptModel
+ prompt_input: [0..1+max_prompt_inputs] init 0;
+ a:[0..2];
+ b:[0..2];
+ c:[0..3];
+ // Select prompt input - Rewards are synchronised based on prompt,profile
+ // a action = level of detail
+ [a1] a=0 & prompt_input=0 & step=2 -> 1:(prompt_input'=1) & (a'=1);  //a1=in high-detail (long answer)
+ [a2] a=0 & prompt_input=0 & step=2 -> 1:(prompt_input'=1) & (a'=2);  //a2=in a concise summary with minimum detail (short answer)
+
+ // b action = tone
+ [b1] b=0 & prompt_input=1 & step=2 -> 1:(prompt_input'=2) & (b'=1) ;  //b1=technical and precise tone (avoid examples, straight to the point)
+ [b2] b=0 & prompt_input=1 & step=2 -> 1:(prompt_input'=2) & (b'=2) ;  //b2=casual, conversational, simple tone (use examples if needed)
+
+ // c action = output_format
+ [c1] c=0 & prompt_input=2 & step=2 -> 1:(prompt_input'=3) & (c'=1) ;  //c1=in a step-by-step list
+ [c2] c=0 & prompt_input=2 & step=2 -> 1:(prompt_input'=3) & (c'=2) ;  //c2=casual, as a summary, no bullet points nor list
+ [c3] c=0 & prompt_input=2 & step=2 -> 1:(prompt_input'=3) & (c'=3) ;  //c3=as a series of bullet points only highlighting key items
+
+ [end] prompt_input=3 -> 1:(prompt_input'= 1+max_prompt_inputs); //required to count final transition reward
+
+endmodule
+
+
+
+//  [retry] step=4 -> pPermissionToRetryGranted:(step'=3) + (1-pPermissionToRetryGranted):(step'=6);
+// ?
+// Do after getting Google Form!
+
+
+ //Human behaviour - conditional on actions -- how the user is "potentially" responding to the answer
+// [] a1=1 & step=3 -> p:() + 1-p:(); //think or retry
+
+// [] b1=2               //
+
+ //"sub-DTMC" end in:
+ //retry
+ //done
+//https://www.prismmodelchecker.org/casestudies/power_ctmc4.php
+
+
+
+
+
+//-----------Reward Values----------
+//--Human input based on specific policies. The reward values to reflect human behavior.
+//------------Non_expert
+ // a action = level of detail; 
+const int prompt_accepted_a1 = 5; // Lowered acceptance of detailed answer
+const int prompt_rejected_a1 = 4;
+const int prompt_accepted_a2 = 10; // Higher preference for concise summary
+const int prompt_rejected_a2 = 1;
+ // b action = tone
+const int prompt_accepted_b1 = 2;  // Technical tone less accepted
+const int prompt_rejected_b1 = 7;
+const int prompt_accepted_b2 = 15;  // Conversational tone more preferred
+const int prompt_rejected_b2 = 3;
+ // c action = output_format
+const int prompt_accepted_c1 = 23; // Step-by-step lists preferred
+const int prompt_rejected_c1 = 6;
+const int prompt_accepted_c2 = 1; 
+const int prompt_rejected_c2 = 12;
+const int prompt_accepted_c3 = 14; 
+const int prompt_rejected_c3 = 13;
+
+ //a1=in high-detail (long answer) //a2=in a concise summary with minimum detail (short answer)
+ //b1=technical and precise tone (avoid examples, straight to the point) //b2=casual, conversational, simple tone (use examples if needed)
+ //c1=in a step-by-step list //c2=casual, as a summary, no bullet points nor list //c3=as a series of bullet points only highlighting key items
+
+//------------Planning_expert
+ // a action = level of detail
+const int prompt_accepted_a1_pe = 8; // Prefers detailed answers
+const int prompt_rejected_a1_pe = 1;
+const int prompt_accepted_a2_pe = 2; 
+const int prompt_rejected_a2_pe = 4;
+ // b action = tone
+const int prompt_accepted_b1_pe = 25;  // Technical tone preferred
+const int prompt_rejected_b1_pe = 2;
+const int prompt_accepted_b2_pe = 5;
+const int prompt_rejected_b2_pe = 16;
+ // c action = output_format
+const int prompt_accepted_c1_pe = 11;
+const int prompt_rejected_c1_pe = 12;
+const int prompt_accepted_c2_pe = 29; //summary prefered
+const int prompt_rejected_c2_pe = 8;
+const int prompt_accepted_c3_pe = 5;
+const int prompt_rejected_c3_pe = 4;
+
+
+//------------Case_study_expert
+// a action = level of detail
+const int prompt_accepted_a1_ce = 36;
+const int prompt_rejected_a1_ce = 1;
+const int prompt_accepted_a2_ce = 9;
+const int prompt_rejected_a2_ce = 14;
+// b action = tone
+const int prompt_accepted_b1_ce = 44;  // More okay with technical tone
+const int prompt_rejected_b1_ce = 3;
+const int prompt_accepted_b2_ce = 15;
+const int prompt_rejected_b2_ce = 14;
+// c action = output_format
+const int prompt_accepted_c1_ce = 4;
+const int prompt_rejected_c1_ce = 2;
+const int prompt_accepted_c2_ce = 3;
+const int prompt_rejected_c2_ce = 3;
+const int prompt_accepted_c3_ce = 50; // Bullet points preferred for case summaries
+const int prompt_rejected_c3_ce = 2;
+
+
+//-----------Prospect Theory Parameters----------
+// These values are based on Kahneman & Tversky's original paper.
+const double alpha = 0.88; // Exponent for gains (diminishing sensitivity)
+
+//Negative reward bounded by 0, so don't use loss aversion:
+//const double beta = 0.88;  // Exponent for losses (diminishing sensitivity) 
+//const double lambda = 2.25; // Loss aversion coefficient (losses feel ~2.25x more impactful)
+
+
+rewards "acceptance"
+    // -- Non-Expert Rewards --
+    // If (Accepted - Rejected) is a GAIN (>= 0), value = (gain)^alpha
+    [a1] profile=non_expert & (prompt_accepted_a1 - prompt_rejected_a1 >= 0) : pow(prompt_accepted_a1 - prompt_rejected_a1, alpha);
+    [a2] profile=non_expert & (prompt_accepted_a2 - prompt_rejected_a2 >= 0) : pow(prompt_accepted_a2 - prompt_rejected_a2, alpha);
+    [b1] profile=non_expert & (prompt_accepted_b1 - prompt_rejected_b1 >= 0) : pow(prompt_accepted_b1 - prompt_rejected_b1, alpha);
+    [b2] profile=non_expert & (prompt_accepted_b2 - prompt_rejected_b2 >= 0) : pow(prompt_accepted_b2 - prompt_rejected_b2, alpha);
+    [c1] profile=non_expert & (prompt_accepted_c1 - prompt_rejected_c1 >= 0) : pow(prompt_accepted_c1 - prompt_rejected_c1, alpha);
+    [c2] profile=non_expert & (prompt_accepted_c2 - prompt_rejected_c2 >= 0) : pow(prompt_accepted_c2 - prompt_rejected_c2, alpha);
+    [c3] profile=non_expert & (prompt_accepted_c3 - prompt_rejected_c3 >= 0) : pow(prompt_accepted_c3 - prompt_rejected_c3, alpha);
+
+    // -- Planning Expert Rewards --
+    [a1] profile=planning_expert & (prompt_accepted_a1_pe - prompt_rejected_a1_pe >= 0) : pow(prompt_accepted_a1_pe - prompt_rejected_a1_pe, alpha);
+    [a2] profile=planning_expert & (prompt_accepted_a2_pe - prompt_rejected_a2_pe >= 0) : pow(prompt_accepted_a2_pe - prompt_rejected_a2_pe, alpha);
+    [b1] profile=planning_expert & (prompt_accepted_b1_pe - prompt_rejected_b1_pe >= 0) : pow(prompt_accepted_b1_pe - prompt_rejected_b1_pe, alpha);
+    [b2] profile=planning_expert & (prompt_accepted_b2_pe - prompt_rejected_b2_pe >= 0) : pow(prompt_accepted_b2_pe - prompt_rejected_b2_pe, alpha);
+    [c1] profile=planning_expert & (prompt_accepted_c1_pe - prompt_rejected_c1_pe >= 0) : pow(prompt_accepted_c1_pe - prompt_rejected_c1_pe, alpha);
+    [c2] profile=planning_expert & (prompt_accepted_c2_pe - prompt_rejected_c2_pe >= 0) : pow(prompt_accepted_c2_pe - prompt_rejected_c2_pe, alpha);
+    [c3] profile=planning_expert & (prompt_accepted_c3_pe - prompt_rejected_c3_pe >= 0) : pow(prompt_accepted_c3_pe - prompt_rejected_c3_pe, alpha);
+
+    // -- Case Study Expert Rewards --
+    [a1] profile=case_study_expert & (prompt_accepted_a1_ce - prompt_rejected_a1_ce >= 0) : pow(prompt_accepted_a1_ce - prompt_rejected_a1_ce, alpha);
+    [a2] profile=case_study_expert & (prompt_accepted_a2_ce - prompt_rejected_a2_ce >= 0) : pow(prompt_accepted_a2_ce - prompt_rejected_a2_ce, alpha);
+    [b1] profile=case_study_expert & (prompt_accepted_b1_ce - prompt_rejected_b1_ce >= 0) : pow(prompt_accepted_b1_ce - prompt_rejected_b1_ce, alpha);
+    [b2] profile=case_study_expert & (prompt_accepted_b2_ce - prompt_rejected_b2_ce >= 0) : pow(prompt_accepted_b2_ce - prompt_rejected_b2_ce, alpha);
+    [c1] profile=case_study_expert & (prompt_accepted_c1_ce - prompt_rejected_c1_ce >= 0) : pow(prompt_accepted_c1_ce - prompt_rejected_c1_ce, alpha);
+    [c2] profile=case_study_expert & (prompt_accepted_c2_ce - prompt_rejected_c2_ce >= 0) : pow(prompt_accepted_c2_ce - prompt_rejected_c2_ce, alpha);
+    [c3] profile=case_study_expert & (prompt_accepted_c3_ce - prompt_rejected_c3_ce >= 0) : pow(prompt_accepted_c3_ce - prompt_rejected_c3_ce, alpha);
+endrewards
+
+
+
+
